@@ -26,7 +26,7 @@ class PurchaseOrder(models.Model):
     po_number = models.CharField(max_length= 10,verbose_name=u'Purchase Number',unique=True)
     vendor = models.ForeignKey(Vendor,related_name='Vendor', on_delete=CASCADE)
     order_date = models.DateTimeField(verbose_name=u'Order Date',null=True,blank=True)
-    delivery_date = models.DateTimeField(verbose_name=u'Delivery Date',null=True,blank=True)
+    delivery_date = models.DateField(verbose_name=u'Delivery Date',null=True,blank=True)
     items = models.CharField(max_length= 200,verbose_name=u'Order Items',null=True,blank=True)
     quantity = models.IntegerField(verbose_name=u'Items Quantity',null=True,blank=True)
     status = models.CharField(max_length= 200,verbose_name=u'Status Of Order',choices=STATUS,null=True,blank=True,default='Placed') 

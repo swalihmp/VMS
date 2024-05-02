@@ -8,6 +8,7 @@ from VMS.utils import response_generator
 from .serializers import *
 import random
 import string
+from datetime import datetime
 from rest_framework.exceptions import ValidationError
 
 
@@ -217,5 +218,74 @@ class PurchaseView(viewsets.ViewSet):
             else:
                 raise ValidationError("Invalid data provided")
 
+        except Exception as e:
+            raise e
+        
+        
+    
+    @swagger_auto_schema(operation_description='acknowledge purchase order by veendor',
+    operation_summary='acknowledge purchase order by veendor',
+    tags=['Purchase Order']
+    )
+    @action(methods=['GET'],detail=True)
+    def acknowledge_purchase_order(self,request, pk=None):
+        try:
+            serializer_obj = GetIdSerializer(data={'pk':pk})
+            
+            if serializer_obj.is_valid(raise_exception=True):
+                order = PurchaseOrder.objects.get(id=pk)
+                
+                current_date = datetime.now()
+                order.acknowledgment_date = current_date
+                
+                order.save()
+                            
+                return Response(response_generator(status_code=1,success_msg=DEFAULT_SUCCESS_MSG,status=status.HTTP_200_OK)) 
+            else:
+                return Response(serializer_obj.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            raise e
+        
+        
+    
+    @swagger_auto_schema(operation_description='get all purchase orders',
+    operation_summary='get all purchase orders',
+    tags=['Purchase Order'],
+    )      
+    @action(methods=['GET'],detail=False)
+    def get_allorders(self,request):
+        try:
+            orders = PurchaseOrder.objects.all()
+            
+            serializer = PurchaseOrderSerializer(orders, many=True)
+            return Response(response_generator(status_code=1,success_msg=DEFAULT_SUCCESS_MSG,data=serializer.data,status=status.HTTP_200_OK))
+
+        except Exception as e:
+            raise e
+            
+        
+    
+    @swagger_auto_schema(operation_description='get order detail using id',
+    operation_summary='get order details',
+    tags=['Purchase Order'],
+    )      
+    @action(methods=['GET'],detail=True)
+    def get_order_details(self, request, pk=None):
+        try:
+            serializer_obj = PurchaseOrderSerializer(data={'pk':pk})
+            if serializer_obj.is_valid(raise_exception=True):
+                
+                instance = PurchaseOrder.objects.get(id=serializer_obj.validated_data.get('pk'))
+                
+                serializer = PurchaseOrderSerializer(instance)
+                return Response(response_generator(status_code=1,success_msg=DEFAULT_SUCCESS_MSG,data=serializer.data,status=status.HTTP_200_OK))
+            
+            else:
+                # Raise ValidationError if serializer is not valid
+                raise ValidationError("Invalid data provided")
+        except Vendor.DoesNotExist:
+            return Response(response_generator(status_code=0, error_msg=ERROR_DOES_NOT_EXIST, status=status.HTTP_404_NOT_FOUND))
+        
         except Exception as e:
             raise e
