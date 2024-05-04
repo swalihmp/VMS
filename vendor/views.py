@@ -309,7 +309,34 @@ class PurchaseView(viewsets.ViewSet):
                 order.status = serializer_obj.validated_data.get('status')
                 order.save()
                 
-                
+                if(order.status == 'Completed') :
+                    
+                    order.delivery_date = datetime.today().date()
+                    
+                    order.save()
+                    
+                    
+                    completed_orders_count = PurchaseOrder.objects.filter(
+                        vendor=order.vendor,
+                        status='Completed',
+                        delivery_date__lte=order.expected_delivery_date
+                    ).count()
+
+                    # Count total completed POs for the vendor
+                    total_completed_orders_count = PurchaseOrder.objects.filter(
+                        vendor=order.vendor,
+                        status='Completed'
+                    ).count()
+
+                    # Calculate the ratio
+                    if total_completed_orders_count != 0:
+                        ratio = completed_orders_count / total_completed_orders_count
+                        
+                        vendor_obj = Historical_Performance.objects.get(vendor = order.vendor)
+                        vendor_obj.on_time_delivery_rate = ratio
+                        vendor_obj.date = datetime.now()
+                        vendor_obj.save()
+                    
                             
                 return Response(response_generator(status_code=1,success_msg=DEFAULT_SUCCESS_MSG,status=status.HTTP_200_OK)) 
             else:

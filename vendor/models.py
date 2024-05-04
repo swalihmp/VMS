@@ -24,8 +24,9 @@ class Vendor(models.Model):
 
 class PurchaseOrder(models.Model):
     po_number = models.CharField(max_length= 10,verbose_name=u'Purchase Number',unique=True)
-    vendor = models.ForeignKey(Vendor,related_name='Vendor', on_delete=CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=CASCADE)
     order_date = models.DateTimeField(verbose_name=u'Order Date',null=True,blank=True)
+    expected_delivery_date = models.DateField(verbose_name=u'Expected Delivery Date',null=True,blank=True)
     delivery_date = models.DateField(verbose_name=u'Delivery Date',null=True,blank=True)
     items = models.CharField(max_length= 200,verbose_name=u'Order Items',null=True,blank=True)
     quantity = models.IntegerField(verbose_name=u'Items Quantity',null=True,blank=True)
@@ -36,3 +37,14 @@ class PurchaseOrder(models.Model):
     
     def __str__(self):
         return self.po_number
+    
+    
+
+
+class Historical_Performance(models.Model):
+    vendor = models.OneToOneField(Vendor, on_delete=CASCADE)
+    date = models.DateTimeField(verbose_name=u'Date Of the Performance Last updated',null=True,blank=True)
+    on_time_delivery_rate = models.FloatField(verbose_name=u'On Time Delivery Rate',null=True,blank=True)
+    quality_rating_avg = models.FloatField(verbose_name=u'Average Quality Rating',null=True,blank=True)
+    average_response_time = models.FloatField(verbose_name=u'Average Response Time',null=True,blank=True)
+    fulfillment_rate = models.FloatField(verbose_name=u'Full Fillment Rate',null=True,blank=True)
