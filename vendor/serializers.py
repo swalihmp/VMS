@@ -24,7 +24,7 @@ class AddPurchaseOrderSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PurchaseOrder
-        fields = ['vendor','order_date','items','quantity','issue_date']
+        fields = ['vendor','order_date','delivery_date','items','quantity','issue_date']
         
 
 class PurchaseOrderSerializer(serializers.ModelSerializer):
@@ -32,3 +32,9 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = '__all__'
+        
+
+class StatusChangeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PurchaseOrder
+        fields = ['id','status']

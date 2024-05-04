@@ -1,6 +1,6 @@
 STATUS=(
     ('Placed', 'Placed'),
-    ('Confirmed', 'Confirmed'),
     ('Declined', 'Declined'),
+    ('Packed', 'Packed'),
     ('Delivered', 'Delivered'),
 )
